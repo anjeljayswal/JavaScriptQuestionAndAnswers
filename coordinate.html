@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mouse Coordinates</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <label for="xCoordinate">X-coordinate:</label>
+  <input type="text" id="xCoordinate">
+  <label for="yCoordinate">Y-coordinate:</label>
+  <input type="text" id="yCoordinate">
+  
+  <script>
+    // Function to handle mouse movement
+    function handleMouseMove(event) {
+      // Get mouse coordinates
+      const mouseX = event.clientX;
+      const mouseY = event.clientY;
+
+      // Log coordinates to console (you can use them as needed)
+      console.log(`Mouse X: ${mouseX}, Mouse Y: ${mouseY}`);
+
+      // Update input boxes with coordinates
+      document.getElementById('xCoordinate').value = mouseX;
+      document.getElementById('yCoordinate').value = mouseY;
+
+       // Store coordinates in local storage
+       localStorage.setItem('xCoordinate', mouseX);
+       localStorage.setItem('yCoordinate', mouseY);
+    }
+
+    // Add event listener for mouse movement
+    document.addEventListener('mousemove', handleMouseMove);
+    // Load coordinates from local storage on page load
+    document.addEventListener('DOMContentLoaded', () => {
+        const storedX = localStorage.getItem('xCoordinate');
+        const storedY = localStorage.getItem('yCoordinate');
+  
+        if (storedX !== null && storedY !== null) {
+          document.getElementById('xCoordinate').value = storedX;
+          document.getElementById('yCoordinate').value = storedY;
+        }
+      });
+  </script>
+</body>
+</html>

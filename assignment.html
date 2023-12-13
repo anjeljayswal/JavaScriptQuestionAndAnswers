@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- css  -->
+    <style>
+        .arrow {
+            width: 0;
+            height: 0;
+            border-left: 60px solid transparent;
+            border-right: 60px solid transparent;
+            border-bottom: 40px solid #ba1111;
+            margin-top: 20px;
+            transition: transform 0.3s ease-in-out;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform-origin: center bottom;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!---- arrow element ---->
+    <div class="arrow" id="arrow"></div>
+
+    <script>
+        //<!----elemt taken by id -->
+        const arrow = document.getElementById('arrow');
+        // craeting broadcast channel api. it allows to communicate between browser context eg:windows, tabs
+        const arrowChannel = new BroadcastChannel('arrowChannel');
+
+        //function for updatating orientation
+        function updateOrientation(event) {
+            const centerX = window.innerWidth / 2;
+            //console.log(centerX);
+            localStorage.setItem("centerX", centerX);
+            const centerY = window.innerHeight / 2;
+            //console.log(centerY);
+
+            const deltaX = event.clientX - centerX;
+            //console.log("deltaX :"+ deltaX);
+            const deltaY = event.clientY - centerY;
+            //console.log("deltaY :"+ deltaY);
+
+            //getting mouse position  in radian and conveting it into degree
+            const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+            //console.log("Angle means mouse postion " + angle);
+
+            // arrow orientation updation(transforming arrow )
+            arrow.style.transform = `rotate(${angle}deg)`;
+
+            // broadcast the orientation data to other windows
+            const orientationData = { angle };
+            localStorage.setItem('arrowOrientation', JSON.stringify(orientationData));// updating angle on mouse move
+            arrowChannel.postMessage({ type: 'orientation', orientation: orientationData });
+            //arrowChannel.onmessage = (event) => {
+              //  console.log('Received message:', event.data);
+                // Handle the message as needed
+            //};
+            //arrowChannel.postMessage("hi happy to connect you")
+        }
+
+        document.addEventListener('mousemove', updateOrientation);
+        //document.addEventListener('mouseenter', updateOrientation);
+
+        // Retrieve the stored orientation data on page load
+        const storedOrientationJSON = localStorage.getItem('arrowOrientation');
+        console.log("storedOrientationJSON "+ storedOrientationJSON);
+        if (storedOrientationJSON) {
+            const storedOrientation = JSON.parse(storedOrientationJSON);
+            console.log(storedOrientation);
+            arrow.style.transform = `rotate(${storedOrientation.angle}deg)`;
+        }
+
+        // updating arrow orientation based on the position of the other window
+        function updateArrowOrientation(positionData) {
+            const otherWindowX = positionData.x;
+            console.log("other:"+otherWindowX);
+            const otherWindowY = positionData.y;
+
+            const deltaX = otherWindowX - centerX;
+            const deltaY = otherWindowY - centerY;
+
+            const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+
+            arrow.style.transform = `rotate(${angle}deg)`;
+        }
+
+        // Listen for orientation and position updates from other windows
+        arrowChannel.onmessage = (event) => {
+            const receivedData = event.data;
+
+            if (receivedData.type === 'position') {
+                updateArrowOrientation(receivedData.position);
+            } else {
+                // Adjust the rotation based on the angle between windows
+                const angleAdjustment = 180; // You may need to adjust this value
+                const rotatedAngle = receivedData.orientation.angle + angleAdjustment;
+
+                arrow.style.transform = `rotate(${rotatedAngle}deg)`;
+            }
+        };
+        
+
+        // broadcast the position of this window to others
+        /*function broadcastPosition() {
+            const positionData = { x: window.screenX, y: window.screenY };
+            arrowChannel.postMessage({ type: 'position', position: positionData });
+        }
+
+        // broadcast the position initially and then at intervals
+        broadcastPosition();
+        setInterval(broadcastPosition, 1000); 
+        */
+    </script>
+
+</body>
+
+</html>

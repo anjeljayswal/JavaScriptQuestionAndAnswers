@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inter-Browser Communication</title>
+</head>
+<body>
+  <label for="messageInput">Type a message:</label>
+  <input type="text" id="messageInput">
+  <button onclick="sendMessage()">Send</button>
+
+  <script>
+    function sendMessage() {
+      const messageInput = document.getElementById('messageInput');
+      const message = messageInput.value;
+
+      // Save the message to localStorage
+      localStorage.setItem('sharedMessage', message);
+    }
+
+    // Check for changes in localStorage
+    window.addEventListener('storage', (event) => {
+      if (event.key === 'sharedMessage') {
+        // Handle the received message
+        const receivedMessage = event.newValue;
+        alert('Received message: ' + receivedMessage);
+      }
+    });
+  </script>
+</body>
+</html>
+

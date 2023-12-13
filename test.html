@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Window Movement Animation</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    .animated-element {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background-color: red;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      transition: border-radius 0.3s ease-in-out, transform 0.3s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+  <div class="animated-element"></div>
+
+  <script>
+    const animatedElement = document.querySelector('.animated-element');
+
+    function handleWindowMove(event) {
+      const elementRect = animatedElement.getBoundingClientRect();
+      const elementCenterX = elementRect.left + elementRect.width / 2;
+      const elementCenterY = elementRect.top + elementRect.height / 2;
+
+      const mouseX = event.clientX;
+      const mouseY = event.clientY;
+
+      const distance = Math.sqrt(
+        Math.pow(mouseX - elementCenterX, 2) + Math.pow(mouseY - elementCenterY, 2)
+      );
+
+      const maxDistance = Math.sqrt(
+        Math.pow(elementRect.width / 2, 2) + Math.pow(elementRect.height / 2, 2)
+      );
+
+      const percentage = distance / maxDistance;
+      const borderRadius = 50 - percentage * 50; // Linear mapping
+
+      animatedElement.style.borderRadius = `${borderRadius}%`;
+
+      const scrollX = window.scrollX || window.pageXOffset;
+      const scrollY = window.scrollY || window.pageYOffset;
+
+      animatedElement.style.transform = `translate(${mouseX + scrollX}px, ${mouseY + scrollY}px) translate(-50%, -50%)`;
+    }
+
+    // Update position and shape when the user moves the mouse
+    window.addEventListener('mousemove', handleWindowMove);
+
+    // Update position and shape when the user scrolls
+    window.addEventListener('scroll', handleWindowMove);
+  </script>
+</body>
+</html>

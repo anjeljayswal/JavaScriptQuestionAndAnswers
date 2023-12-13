@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Styles for the arrow */
+    .arrow {
+      width: 0;
+      height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-bottom: 40px solid #000; /* Change the color if needed */
+      margin-top: 20px;
+      transition: transform 0.3s ease-in-out, margin 0.3s ease-in-out;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Arrow -->
+<div class="arrow" id="arrow"></div>
+
+<script>
+  // Get the arrow element
+  const arrow = document.getElementById('arrow');
+
+  // Function to update arrow orientation and local storage
+  function updateOrientationAndPosition(event) {
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
+
+    const deltaX = event.clientX - centerX;
+    const deltaY = event.clientY - centerY;
+
+    const angle = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
+
+    // Update arrow orientation
+    arrow.style.transform = `rotate(${angle}deg)`;
+
+    // Update arrow position based on mouse position
+    arrow.style.marginLeft = `${event.clientX}px`;
+    arrow.style.marginTop = `${event.clientY}px`;
+
+    // Store the orientation data in local storage
+    const orientationData = { angle };
+    const orientationJSON = JSON.stringify(orientationData);
+    localStorage.setItem('mouseOrientation', orientationJSON);
+  }
+
+  // Update arrow orientation and position based on mouse position
+  document.addEventListener('mousemove', updateOrientationAndPosition);
+
+  // Retrieve the stored orientation data (optional)
+  const storedOrientationJSON = localStorage.getItem('mouseOrientation');
+  if (storedOrientationJSON) {
+    const storedOrientation = JSON.parse(storedOrientationJSON);
+
+    // Apply stored orientation to arrow
+    arrow.style.transform = `rotate(${storedOrientation.angle}deg)`;
+  }
+</script>
+
+</body>
+</html>

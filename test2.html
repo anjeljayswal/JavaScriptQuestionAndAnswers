@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Window Awareness</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background-color: #f0f0f0;
+    }
+
+    .info {
+      text-align: center;
+      padding: 20px;
+      border: 1px solid #ccc;
+      background-color: #fff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="info" id="info">Waiting for connection...</div>
+
+  <script>
+    const infoDiv = document.getElementById('info');
+    const channel = new BroadcastChannel('windowAwarenessChannel');
+
+    // Listen for messages from other windows
+    channel.onmessage = (event) => {
+      infoDiv.innerHTML = `Connected to Window ${event.data}`;
+    };
+
+    // Send a message with the current window's number
+    channel.postMessage(1);
+  </script>
+</body>
+</html>
